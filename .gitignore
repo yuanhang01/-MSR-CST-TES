@@ -1,0 +1,28 @@
+# PyInstaller build artifacts
+build_temp/
+dist/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Generated executables
+*.exe
+*.spec.bak
+
+# Build logs
+warn-*.txt
+xref-*.html
+
+# Simulation results
+results/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

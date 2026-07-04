@@ -1,0 +1,78 @@
+# ============================================================================
+# SMR + CST + TES 耦合瞬态热力学仿真计算软件 — 配置文件
+# 基于 Bayomy & Moore (2020), Int. J. Energy Res., 45:11689-11711
+# 反应堆类型: 熔盐堆 (MSR) + SolarSalt 储热
+# ============================================================================
+
+# ---------------------------- 仿真控制 ----------------------------------------
+simulation:
+  time_step_hours: 1           # 时间步长 (h)
+  total_hours: 8760            # 全年仿真 (365天 * 24h)
+  start_day: 0                 # 起始日 (0 = Jan 1)
+  output_dir: "results"        # 输出目录
+
+# ---------------------------- 系统控制 ----------------------------------------
+system:
+  fossil_backup_active: false              # 是否启用化石燃料备用 (默认关闭)
+  demand_scale: 1.0                        # 电力需求缩放因子 (1.0=原始, >1.0增大需求)
+
+# ---------------------------- SMR 熔盐堆 (MSR) --------------------------------
+smr:
+  reactor_thermal_power_MWth: 160.0        # 反应堆热功率
+  reactor_outlet_temperature_C: 700.0      # 反应堆出口温度 (熔盐)
+  turbine_inlet_temperature_C: 650.0       # 涡轮入口温度
+  cycle_efficiency: 0.28                   # 热-电转换效率 (Brayton: ~28% @ 700°C)
+  heat_exchanger_loss_frac: 0.05           # 换热器热损失比例
+  heat_exchanger_TTD_C: 5.0                # 换热器端差
+
+# ---------------------------- CST (Gemasolar 参考) ----------------------------
+cst:
+  field_area_m2: 150000.0            # 定日镜场面积
+  concentration_ratio: 900.0         # 聚光比
+  field_efficiency: 0.60             # 场综合效率
+  receiver_emissivity: 0.88          # 接收器发射率
+  view_factor: 0.80                  # 视因子
+  reflectivity: 0.06                 # 镜面反射率
+  tube_outer_diameter_m: 0.04        # 管外径
+  tube_thermal_conductivity_WpmK: 23.9  # 管导热系数
+  wind_velocity_mps: 7.0             # 风速
+  ambient_temperature_C: 25.0        # 环境温度（设计点）
+  max_fluid_velocity_mps: 4.0        # 最大工质流速
+  receiver_inlet_temperature_C: 290.0  # 接收器入口温度
+  receiver_outlet_temperature_C: 565.0 # 接收器出口温度（设计点）
+  control_strategy: "FT"             # FT = 固定出口温度
+  dni_threshold_Wpm2: 350.0          # DNI 低于此值流量置零（实际运行约束）
+
+# ---------------------------- TES 储热系统 ------------------------------------
+tes:
+  tank_height_m: 14.0               # 储罐高度（优化值）
+  tank_diameter_m: 10.0             # 储罐直径
+  cold_tank_temperature_C: 25.0     # 冷罐温度（Therminol）
+  hot_tank_initial_temperature_C: 520.0  # 热罐初始温度 (SolarSalt 设计点 520°C)
+  tank_insulation_U_Wpm2K: 0.5      # 储罐整体传热系数
+  storage_fluid: "SolarSalt"        # 储热流体: Therminol, Dowtherm, SolarSalt, Hitec, HitecXL
+  auxiliary_heater_efficiency: 0.95 # 辅助电加热效率
+
+# ---------------------------- 经济参数 ----------------------------------------
+economics:
+  lifetime_years: 20                # 系统寿命
+  interest_rate: 0.05               # 利率
+  smr_cost_per_kWe_CNY: 36909.6         # SMR单位成本 (CNY/kWe, 1 CAD ≈ 5.2 CNY)
+  natural_gas_cost_per_kWe_CNY: 8054.8  # 天然气单位成本
+  cst_cost_per_kWe_CNY: 48880.0         # CST单位成本
+  electricity_peak_rate_CNY_per_kWh: 0.78   # 峰时电价
+  electricity_offpeak_rate_CNY_per_kWh: 0.416  # 谷时电价
+  natural_gas_fuel_cost_CNY_per_MWh: 156.0    # 天然气燃料成本
+
+# ---------------------------- 数据文件路径 ------------------------------------
+data:
+  dni_file: "data/dni_ottawa.csv"         # DNI 数据
+  electric_demand_file: "data/electric_demand_ontario.csv"  # 电力需求
+  heat_demand_file: "data/heat_demand_residential.csv"       # 热需求
+
+# ---------------------------- 输出控制 ----------------------------------------
+output:
+  save_interval_hours: 1             # 保存间隔
+  generate_plots: true               # 是否生成图表
+  generate_csv: true                 # 是否生成CSV结果
+  verbose: true                      # 详细输出
