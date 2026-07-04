@@ -48,7 +48,7 @@ C_CARD     = '#ffffff'
 C_PROGRESS_TROUGH = '#e2e8f0'
 
 FONT_TITLE   = ('Microsoft YaHei UI', 15, 'bold')
-FONT_SUBTITLE = ('Microsoft YaHei UI', 9)
+FONT_SUBTITLE = ('Microsoft YaHei UI', 10)
 FONT_SECTION = ('Microsoft YaHei UI', 10, 'bold')
 FONT_BODY    = ('Microsoft YaHei UI', 9)
 FONT_MONO    = ('Cascadia Code', 9)
@@ -172,7 +172,7 @@ class SimulationGUI:
         tk.Label(left, text="⚡ SMR + CST + TES 耦合瞬态仿真系统", font=FONT_TITLE,
                  fg=C_WHITE, bg=C_SIDEBAR).pack(anchor='w')
         tk.Label(left, text="MSR 熔盐堆 | Gemasolar CST | SolarSalt 双罐储热 | 袁航",
-                 font=FONT_SUBTITLE, fg='#94a3b8', bg=C_SIDEBAR).pack(anchor='w')
+                 font=FONT_SUBTITLE, fg='#cbd5e1', bg=C_SIDEBAR).pack(anchor='w')
 
         right = tk.Frame(header, bg=C_SIDEBAR)
         right.pack(side='right', fill='y', padx=20, pady=8)
