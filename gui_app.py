@@ -273,8 +273,8 @@ class SimulationGUI:
                 "Q_heat": "CSV: 时间[h], 热负荷[MW]",
                 "T_amb": "CSV: 时间[h], 环境温度[°C]",
             }
-            for key, (label, tip) in [("DNI", "DNI 辐照 [W/m²]"), ("P_elec", "电力负荷 [MW]"),
-                                       ("Q_heat", "热负荷 [MW]"), ("T_amb", "环境温度 [°C]")]:
+            for key, label in [("DNI", "DNI 辐照 [W/m²]"), ("P_elec", "电力负荷 [MW]"),
+                               ("Q_heat", "热负荷 [MW]"), ("T_amb", "环境温度 [°C]")]:
                 fr = tk.Frame(card, bg=C_CARD)
                 fr.pack(fill='x', pady=2)
                 tk.Label(fr, text=f"{label}:", bg=C_CARD, font=FONT_BODY, fg=C_TEXT,
