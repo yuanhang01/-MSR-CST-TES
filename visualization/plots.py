@@ -584,8 +584,7 @@ class NRHESVisualizer:
 
         if dni is not None and T_amb is not None:
             self.plot_dni_profile(dni, T_amb)
-        if P_demand is not None and H_demand is not None:
-            self.plot_demand_profiles(P_demand, H_demand)
+
 
         print("[Visualization] Done.")
 

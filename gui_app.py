@@ -66,7 +66,7 @@ FONT_SECTION  = ('Microsoft YaHei UI', 15, 'bold')
 FONT_BODY     = ('Microsoft YaHei UI', 14)
 FONT_SMALL    = ('Microsoft YaHei UI', 12)
 FONT_TINY     = ('Microsoft YaHei UI', 11)
-FONT_MONO     = ('Cascadia Code', 9)
+FONT_MONO     = ('Cascadia Code', 11)
 FONT_AUTHOR   = ('Microsoft YaHei UI', 10, 'italic')
 
 
@@ -191,7 +191,7 @@ class SimulationGUI:
         body.pack(fill='both', expand=True)
 
         # Left sidebar 35%
-        sidebar = tk.Frame(body, bg=C_BG, width=390)
+        sidebar = tk.Frame(body, bg=C_BG, width=470)
         sidebar.pack(side='left', fill='y')
         sidebar.pack_propagate(False)
         self._create_sidebar(sidebar)
@@ -205,16 +205,14 @@ class SimulationGUI:
 
     # ══ Header ═════════════════════════════════════════════════
     def _create_header(self):
-        h = tk.Frame(self.root, bg=_darken(C_BG, 0.7), height=54)
+        h = tk.Frame(self.root, bg=_darken(C_BG, 0.7), height=62)
         h.pack(fill='x')
         h.pack_propagate(False)
 
         left = tk.Frame(h, bg=h['bg'])
-        left.pack(side='left', fill='y', padx=18, pady=6)
+        left.pack(side='left', fill='y', padx=18, pady=8)
         tk.Label(left, text="⚡ SMR + CST + TES 耦合瞬态仿真系统", font=FONT_TITLE,
                  fg=C_TEXT_PRIME, bg=h['bg']).pack(anchor='w')
-        tk.Label(left, text="MSR 熔盐堆 | Gemasolar CST | SolarSalt 双罐储热 | 袁航",
-                 font=FONT_SMALL, fg=C_TEXT_SEC, bg=h['bg']).pack(anchor='w')
 
         right = tk.Frame(h, bg=h['bg'])
         right.pack(side='right', fill='y', padx=18, pady=6)
@@ -225,13 +223,13 @@ class SimulationGUI:
 
     # ══ Sidebar ════════════════════════════════════════════════
     def _create_sidebar(self, parent):
-        canvas = tk.Canvas(parent, bg=C_BG, highlightthickness=0, width=380)
+        canvas = tk.Canvas(parent, bg=C_BG, highlightthickness=0, width=456)
         scrollbar = ttk.Scrollbar(parent, orient='vertical', command=canvas.yview,
                                    style='Vertical.TScrollbar')
         sf = tk.Frame(canvas, bg=C_BG)
 
         sf.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
-        canvas.create_window((0, 0), window=sf, anchor='nw', width=372)
+        canvas.create_window((0, 0), window=sf, anchor='nw', width=446)
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.pack(side='left', fill='both', expand=True)
         scrollbar.pack(side='right', fill='y')
@@ -264,7 +262,7 @@ class SimulationGUI:
             [("仿真时长 [h]", "8760", "hours", "全年=8,760h | 一周=168h")])
 
         # ── Data Card ──
-        self._param_card(sf, "📂 输入数据 (可选)", "留空自动生成 Ottawa 合成数据", C_TEXT_DIM,
+        self._param_card(sf, "📂 输入数据 (可选)", "留空自动使用默认数据", C_TEXT_DIM,
             [], with_data=True)
 
     # ── Param Card Builder ─────────────────────────────────────
@@ -280,7 +278,7 @@ class SimulationGUI:
         tk.Frame(title_row, bg=accent, width=3, height=20).pack(side='left', padx=(0, 8))
         tk.Label(title_row, text=title, font=FONT_SECTION, fg=C_TEXT_PRIME,
                  bg=C_CARD_BG).pack(side='left')
-        tk.Label(card, text=desc, font=FONT_SMALL, fg=C_TEXT_DIM,
+        tk.Label(card, text=desc, font=('Microsoft YaHei UI', 13, 'bold'), fg=C_WARNING,
                  bg=C_CARD_BG).pack(anchor='w', pady=(0, 8))
 
         for lbl, dfl, name, tip in fields:
@@ -328,7 +326,7 @@ class SimulationGUI:
                 fr.pack(fill='x', pady=3)
                 tk.Label(fr, text=f"{label}:", bg=C_CARD_BG, font=FONT_SMALL, fg=C_TEXT_SEC,
                          width=20, anchor='e').pack(side='left', padx=(0, 8))
-                b = _btn(fr, "选择文件", lambda k=key: self._select_file(k),
+                b = _btn(fr, "点击选择文件", lambda k=key: self._select_file(k),
                          variant='secondary', font=FONT_TINY, padx=10)
                 b.pack(side='left', padx=2)
                 self._tooltip(b, tips.get(key, ""))
@@ -422,6 +420,9 @@ class SimulationGUI:
         self.summary_text.pack(fill='both', expand=True, padx=8, pady=4)
         self.summary_text.tag_config('k', foreground=C_PRIMARY)
         self.summary_text.tag_config('v', foreground=C_SUCCESS)
+
+        # Tab 3: 源码展示
+        self._create_source_tab()
 
     # ══ Footer ═════════════════════════════════════════════════
     def _create_footer(self):
@@ -650,7 +651,7 @@ class SimulationGUI:
             slines.append(f"  年总充热量:              {s.get('annual_total_charge_MWh', s.get('tes_total_charge_MWh', 0)):.0f} MWh")
             slines.append(f"  平均放电功率:            {s.get('average_discharge_power_MW', 0):.1f} MW")
             slines.append(f"  日总发电量(典型运行日):  {s.get('daily_generation_typical_MWh', 0):.0f} MWh")
-            slines.append(f"  年总发电量:              {annual_gen:.0f} MWh")
+            slines.append(f"  周期总发电量:            {annual_gen:.0f} MWh")
             slines.append(f"  系统综合热效率:          {s.get('system_overall_efficiency_percent', s.get('yearly_average_combined_efficiency_percent', 0)):.1f}%")
             slines.append("")
             slines.append("══ 经济指标 (CNY) ══")
@@ -729,7 +730,7 @@ class SimulationGUI:
                              self.results['dni'], self.results['T_amb'],
                              self.results['P_demand'], self.results['H_demand'])
             self._log("✦ 图表已保存至 results/figures/", 's')
-            messagebox.showinfo("完成", "5 张图表已生成至 results/figures/")
+            messagebox.showinfo("完成", "4 张图表已生成至 results/figures/")
         except Exception as e:
             self._log(f"✕ 图表错误: {e}", 'e')
 
@@ -737,6 +738,325 @@ class SimulationGUI:
         import subprocess
         d = os.path.join(PROJECT_DIR, 'results'); os.makedirs(d, exist_ok=True)
         subprocess.Popen(f'explorer "{d}"')
+
+    # ══ Source Code Viewer Tab ═════════════════════════════════
+    def _create_source_tab(self):
+        """创建源码展示标签页"""
+        source_tab = tk.Frame(self.notebook, bg=C_CARD_BG)
+        self.notebook.add(source_tab, text="  源码展示  ")
+
+        # Left panel: file list (35%)
+        left_panel = tk.Frame(source_tab, bg=C_CARD_BG, width=200)
+        left_panel.pack(side='left', fill='y')
+        left_panel.pack_propagate(False)
+
+        # File list header
+        lh = tk.Frame(left_panel, bg=C_CARD_BG)
+        lh.pack(fill='x', padx=8, pady=(6, 2))
+        tk.Label(lh, text="📁 项目源文件", font=FONT_SMALL, fg=C_TEXT_PRIME,
+                 bg=C_CARD_BG).pack(side='left')
+
+        # File listbox
+        self.source_file_listbox = tk.Listbox(left_panel, bg=C_INPUT_BG, fg=C_TEXT_SEC,
+            font=FONT_TINY, bd=0, relief='flat', selectbackground=C_PRIMARY,
+            selectforeground=C_WHITE, activestyle='none', highlightthickness=0)
+        self.source_file_listbox.pack(fill='both', expand=True, padx=6, pady=4)
+
+        # Right panel: source view
+        right_panel = tk.Frame(source_tab, bg=C_CARD_BG)
+        right_panel.pack(side='left', fill='both', expand=True, padx=(4, 6), pady=6)
+
+        # Source header
+        rh = tk.Frame(right_panel, bg=C_CARD_BG)
+        rh.pack(fill='x', pady=(0, 2))
+        self.source_file_label = tk.Label(rh, text="选择文件以查看源码", font=FONT_SMALL,
+            fg=C_TEXT_DIM, bg=C_CARD_BG)
+        self.source_file_label.pack(side='left', padx=4)
+
+        # Line count label
+        self.source_line_count = tk.Label(rh, text="", font=FONT_TINY, fg=C_TEXT_DIM,
+            bg=C_CARD_BG)
+        self.source_line_count.pack(side='right', padx=6)
+
+        # Source code text widget with line numbers
+        code_bg = tk.Frame(right_panel, bg=C_INPUT_BG)
+        code_bg.pack(fill='both', expand=True)
+
+        self.source_line_nums = tk.Text(code_bg, width=4, font=FONT_MONO, bg=C_INPUT_BG,
+            fg=C_TEXT_DIM, bd=0, relief='flat', padx=6, pady=6,
+            state='disabled', wrap='none')
+        self.source_line_nums.pack(side='left', fill='y')
+
+        self.source_text = tk.Text(code_bg, font=FONT_MONO,
+            bg=C_INPUT_BG, fg=C_TEXT_SEC, bd=0, relief='flat', padx=10, pady=6,
+            insertbackground=C_PRIMARY, wrap='none')
+        self.source_text.pack(side='left', fill='both', expand=True)
+
+        # Shared scrollbar for line numbers + source text
+        self.source_scrollbar = tk.Scrollbar(code_bg, orient='vertical',
+            bg=C_BG, troughcolor=C_BG, activebackground=C_BORDER)
+        self.source_scrollbar.pack(side='right', fill='y')
+        self.source_line_nums.config(yscrollcommand=self.source_scrollbar.set)
+        self.source_text.config(yscrollcommand=self.source_scrollbar.set)
+        self.source_scrollbar.config(command=self._source_scroll_sync)
+
+        # Configure syntax-highlight tags
+        self.source_text.tag_config('kw', foreground='#FF7B72')     # keywords (red)
+        self.source_text.tag_config('str', foreground='#A5D6FF')    # strings (light blue)
+        self.source_text.tag_config('cmt', foreground='#8B949E')    # comments (grey)
+        self.source_text.tag_config('num', foreground='#79C0FF')    # numbers (blue)
+        self.source_text.tag_config('fn', foreground='#D2A8FF')     # function names
+        self.source_text.tag_config('dec', foreground='#FFA657')    # decorators (orange)
+        self.source_text.tag_config('cls', foreground='#FFA657')    # class (orange)
+        self.source_text.tag_config('imp', foreground='#7EE787')    # imports (green)
+        self.source_text.tag_config('const', foreground='#56D364')  # constants (green)
+
+        # Scan and populate file list
+        self._scan_source_files()
+        self.source_file_listbox.bind('<<ListboxSelect>>', self._on_source_file_select)
+
+    def _scan_source_files(self):
+        """扫描项目目录中的所有 .py 文件"""
+        self.source_files = {}
+        self.source_file_listbox.delete(0, 'end')
+
+        exclude_dirs = {'__pycache__', '.git', 'results', 'build_temp', 'build',
+                        'build_main', 'dist', 'figures', 'logs'}
+        py_files = []
+
+        for root_dir, dirs, files in os.walk(PROJECT_DIR, topdown=True):
+            dirs[:] = [d for d in dirs if d not in exclude_dirs and not d.startswith('.')]
+            for f in files:
+                if f.endswith('.py'):
+                    full_path = os.path.join(root_dir, f)
+                    rel_path = os.path.relpath(full_path, PROJECT_DIR)
+                    py_files.append(rel_path)
+
+        py_files.sort(key=lambda x: (os.path.dirname(x), os.path.basename(x)))
+
+        for rel_path in py_files:
+            self.source_files[rel_path] = os.path.join(PROJECT_DIR, rel_path)
+            # Display icon based on directory
+            if os.path.dirname(rel_path):
+                display = f"  📄 {rel_path}"
+            else:
+                display = f"  📄 {rel_path}"
+            self.source_file_listbox.insert('end', display)
+
+    def _on_source_file_select(self, event):
+        """当用户选择文件列表中的文件时"""
+        selection = self.source_file_listbox.curselection()
+        if not selection:
+            return
+
+        idx = selection[0]
+        rel_path = list(self.source_files.keys())[idx]
+        full_path = self.source_files[rel_path]
+
+        try:
+            with open(full_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception as e:
+            content = f"# Error loading file: {e}"
+
+        self.source_file_label.config(text=f"📝 {rel_path}", fg=C_SUCCESS)
+        self._display_source_with_highlight(content)
+
+    def _source_scroll_sync(self, *args):
+        """同步行号和源码的滚动"""
+        if args[0] == 'moveto':
+            self.source_line_nums.yview_moveto(args[1])
+            self.source_text.yview_moveto(args[1])
+        elif args[0] == 'scroll':
+            self.source_line_nums.yview_scroll(int(args[1]), args[2])
+            self.source_text.yview_scroll(int(args[1]), args[2])
+
+    def _display_source_with_highlight(self, content):
+        """显示源代码并应用语法高亮"""
+        self.source_text.config(state='normal')
+        self.source_text.delete('1.0', 'end')
+        self.source_line_nums.config(state='normal')
+        self.source_line_nums.delete('1.0', 'end')
+
+        lines = content.split('\n')
+        total_lines = len(lines)
+        self.source_line_count.config(text=f"共 {total_lines} 行")
+
+        # Build line numbers
+        max_digits = max(3, len(str(total_lines)))
+        line_num_text = '\n'.join(f"{i+1:>{max_digits}} " for i in range(total_lines))
+        self.source_line_nums.insert('1.0', line_num_text)
+        self.source_line_nums.config(state='disabled')
+
+        # Insert text and apply syntax highlighting
+        self.source_text.insert('1.0', content)
+
+        # Python keywords
+        KEYWORDS = {
+            'import', 'from', 'as', 'def', 'class', 'return', 'if', 'elif',
+            'else', 'try', 'except', 'finally', 'raise', 'for', 'while',
+            'break', 'continue', 'pass', 'and', 'or', 'not', 'in', 'is',
+            'with', 'yield', 'lambda', 'assert', 'del', 'global', 'nonlocal',
+            'True', 'False', 'None', 'self', 'async', 'await',
+        }
+
+        # Built-in functions
+        BUILTINS = {'print', 'len', 'range', 'int', 'float', 'str', 'list',
+                    'dict', 'set', 'tuple', 'bool', 'type', 'zip', 'map',
+                    'filter', 'enumerate', 'super', 'isinstance', 'issubclass',
+                    'hasattr', 'getattr', 'setattr', 'property', 'staticmethod',
+                    'classmethod', 'abs', 'all', 'any', 'bin', 'chr', 'dir',
+                    'divmod', 'eval', 'exec', 'format', 'frozenset', 'hex',
+                    'id', 'input', 'iter', 'max', 'min', 'next', 'oct', 'open',
+                    'ord', 'pow', 'repr', 'reversed', 'round', 'slice', 'sorted',
+                    'sum', 'vars', '__import__'}
+
+        # Highlight keywords and built-ins
+        for word in KEYWORDS | BUILTINS:
+            start = '1.0'
+            while True:
+                start = self.source_text.search(f'\\m{word}\\M', start,
+                    stopindex='end', regexp=True)
+                if not start:
+                    break
+                end = f"{start}+{len(word)}c"
+                tags = self.source_text.tag_names(start)
+                if 'str' not in tags and 'cmt' not in tags:
+                    self.source_text.tag_add('kw', start, end)
+                start = end
+
+        # Highlight import statements (line-level)
+        start = '1.0'
+        while True:
+            start = self.source_text.search(r'^\s*(import|from)\s', start,
+                stopindex='end', regexp=True)
+            if not start:
+                break
+            line_end = self.source_text.search(r'$', start, stopindex='end', regexp=True)
+            if line_end:
+                self.source_text.tag_add('imp', start, line_end)
+            start = line_end if line_end else f"{start}+1c"
+
+        # Highlight decorators
+        start = '1.0'
+        while True:
+            start = self.source_text.search(r'^[ \t]*@\w+', start,
+                stopindex='end', regexp=True)
+            if not start:
+                break
+            line_end = self.source_text.search(r'$', start, stopindex='end', regexp=True)
+            if line_end:
+                self.source_text.tag_add('dec', start, line_end)
+            start = line_end if line_end else f"{start}+1c"
+
+        # Highlight class names
+        start = '1.0'
+        while True:
+            start = self.source_text.search(r'class\s+(\w+)', start,
+                stopindex='end', regexp=True)
+            if not start:
+                break
+            end = self.source_text.search(r'[(:]', start, stopindex='end', regexp=True)
+            if end:
+                self.source_text.tag_add('cls', start, end)
+            start = end if end else f"{start}+1c"
+
+        # Highlight triple-quoted strings (docstrings) - manual state machine
+        in_triple_single = False
+        in_triple_double = False
+        doc_start = None
+        for i, line in enumerate(lines):
+            line_idx = i + 1  # 1-based
+            stripped = line.lstrip()
+            if in_triple_double:
+                if '"""' in line:
+                    end_pos = line.index('"""')
+                    self.source_text.tag_add('str', doc_start,
+                        f"{line_idx}.{end_pos + 3}")
+                    in_triple_double = False
+                    doc_start = None
+            elif in_triple_single:
+                if "'''" in line:
+                    end_pos = line.index("'''")
+                    self.source_text.tag_add('str', doc_start,
+                        f"{line_idx}.{end_pos + 3}")
+                    in_triple_single = False
+                    doc_start = None
+            else:
+                # Check for triple-quote starts
+                dq_pos = line.find('"""')
+                sq_pos = line.find("'''")
+                first_triple = None
+                first_type = None
+                if dq_pos >= 0 and (sq_pos < 0 or dq_pos < sq_pos):
+                    first_triple = dq_pos
+                    first_type = 'double'
+                elif sq_pos >= 0:
+                    first_triple = sq_pos
+                    first_type = 'single'
+
+                if first_triple is not None:
+                    # Check if there's another triple quote on the same line
+                    remaining = line[first_triple + 3:]
+                    if first_type == 'double' and '"""' in remaining:
+                        end_pos = remaining.index('"""') + first_triple + 6
+                        self.source_text.tag_add('str',
+                            f"{line_idx}.{first_triple}",
+                            f"{line_idx}.{end_pos}")
+                    elif first_type == 'single' and "'''" in remaining:
+                        end_pos = remaining.index("'''") + first_triple + 6
+                        self.source_text.tag_add('str',
+                            f"{line_idx}.{first_triple}",
+                            f"{line_idx}.{end_pos}")
+                    else:
+                        # Multi-line docstring starts
+                        if first_type == 'double':
+                            in_triple_double = True
+                        else:
+                            in_triple_single = True
+                        doc_start = f"{line_idx}.{first_triple}"
+
+        # Regular strings (single/double quoted) - simple approach
+        for pattern in [r"'[^'\\n]*'", r'"[^"\\n]*"']:
+            start = '1.0'
+            while True:
+                start = self.source_text.search(pattern, start,
+                    stopindex='end', regexp=True)
+                if not start:
+                    break
+                match_text = self.source_text.get(start, f'{start} lineend')
+                end = f"{start}+{len(match_text)}c"
+                tags = self.source_text.tag_names(start)
+                if 'str' not in tags and 'cmt' not in tags:
+                    self.source_text.tag_add('str', start, end)
+                start = end
+
+        # Highlight comments (last, so strings take priority)
+        start = '1.0'
+        while True:
+            start = self.source_text.search(r'#.*$', start, stopindex='end', regexp=True)
+            if not start:
+                break
+            end = f"{start} lineend"
+            if 'str' not in self.source_text.tag_names(start):
+                self.source_text.tag_add('cmt', start, end)
+            start = end
+
+        # Highlight numbers
+        start = '1.0'
+        while True:
+            start = self.source_text.search(r'\b\d+\.?\d*\b', start,
+                stopindex='end', regexp=True)
+            if not start:
+                break
+            match_text = self.source_text.get(start, f'{start} lineend')
+            end = f"{start}+{len(match_text)}c"
+            tags = self.source_text.tag_names(start)
+            if 'str' not in tags and 'cmt' not in tags:
+                self.source_text.tag_add('num', start, end)
+            start = end
+
+        self.source_text.config(state='disabled')
 
 
 def main():
